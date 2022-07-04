@@ -1,5 +1,5 @@
 
-" An ultimate .vimrc for C++ developers
+" An ultimate .vimrc for Pythoner
 " Author: yingly
 
 " Automatically install plug.vim if not available
@@ -21,6 +21,8 @@ set nocompatible
 " filetype plugin on
 " filetype plugin indent on
 
+set noswapfile
+
 set cursorline
 
 set expandtab
@@ -38,10 +40,6 @@ set listchars=tab:\|\ ,trail:·
 set scrolloff=8
 set indentexpr=
 set backspace=indent,eol,start
-
-set foldenable
-set foldlevel=99
-set foldmethod=indent
 
 syntax on
 set number
@@ -65,29 +63,11 @@ set smartcase
 set encoding=utf-8
 set laststatus=2
 
-if has('gui_running')
-  if has("win16") || has("win32") || has("win95") || has("win64")
-    set guifont=Consolas:h11,Courier_New:h11:cANSI
-  else
-    set guifont=MiscFixed\ Semi-Condensed\ 10
-  endif
-endif
-
 " } // Editor setup
 
-" Auto commands {
-" Change cursor styles
-if has("autocmd")
-  autocmd VimEnter,InsertLeave * silent execute '!echo -ne "\e[2 q"' | redraw!
-  autocmd InsertEnter,InsertChange *
-    \ if v:insertmode == 'i' |
-    \   silent execute '!echo -ne "\e[6 q"' | redraw! |
-    \ elseif v:insertmode == 'r' |
-    \   silent execute '!echo -ne "\e[4 q"' | redraw! |
-    \ endif
-  autocmd VimLeave * silent execute '!echo -ne "\e[ q"' | redraw!
-endif
+source fold/setting.vim
 
+" Auto commands {
 " Keep cursor location
 autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 " } // Auto commands
@@ -102,14 +82,15 @@ noremap ; :
 " Save & quit
 noremap S :w<CR>
 noremap Q :q<CR>
-noremap <C-c> ZQ<CR> 
 
 " Quick access to .vimrc
-noremap V <CMD>e $MYVIMRC<CR>
+noremap V <CMD>vsp<CR><CMD>e $MYVIMRC<CR>
 noremap R <CMD>source $MYVIMRC<CR>
 
 " Find next duplicate words
 noremap <LEADER>D /\(\<\w\+\>\)\_s*\1
+" Find and replace
+noremap \s :%s//g<left><left>
 
 " Copy till the end of line
 nnoremap Y y$
@@ -147,20 +128,14 @@ noremap -c <CMD>set nocursorcolumn<CR>
 " Disable BS
 nnoremap <BS> <CMD>echo "Backspace disabled"<CR>
 
-" Folding
-noremap <silent> <LEADER>o za
-
-" Find and replace
-noremap \s :%s//g<left><left>
-
 " Faster navigation
 noremap <silent> e v$h
 noremap <silent> <LEADER>j 5j
 noremap <silent> <LEADER>k 5k
+noremap <silent> nn 15j
+noremap <silent> mm 15k
 noremap <silent> W 5w
 noremap <silent> B 5b
-noremap <silent> S 0
-noremap <silent> E $
 
 " Switch between last two files
 nnoremap <LEADER><LEADER> <C-^>
@@ -213,50 +188,10 @@ noremap Tn <CMD>+tabmove<CR>
 noremap r :call CompileRunGcc()<CR>
 func! CompileRunGcc()
   exec "w"
-  if &filetype == 'c'
-    exec "!g++ % -o %<"
-    exec "!time ./%<"
-  elseif &filetype == 'cpp'
-    set splitbelow
-    exec "!g++ -std=c++11 -lpthread % -Wall -o %<"
-    " :sp
-    " :res -15
-    :term ./%<
-  elseif &filetype == 'cs'
-    set splitbelow
-    silent! exec "!mcs %"
-    :sp
-    :res -5
-    :term mono %<.exe
-  elseif &filetype == 'java'
-    set splitbelow
-    :sp
-    :res -5
-    term javac % && time java %<
-  elseif &filetype == 'sh'
+  if &filetype == 'sh'
     :!time bash %
   elseif &filetype == 'python'
-    set splitbelow
-    :sp
     :term python3 %
-  elseif &filetype == 'html'
-    silent! exec "!".g:mkdp_browser." % &"
-  elseif &filetype == 'markdown'
-    exec "InstantMarkdownPreview"
-  elseif &filetype == 'tex'
-    silent! exec "VimtexStop"
-    silent! exec "VimtexCompile"
-  elseif &filetype == 'dart'
-    exec "CocCommand flutter.run -d ".g:flutter_default_device." ".g:flutter_run_args
-    silent! exec "CocCommand flutter.dev.openDevLog"
-  elseif &filetype == 'javascript'
-    set splitbelow
-    :sp
-    :term export DEBUG="INFO,ERROR,WARNING"; node --trace-warnings .
-  elseif &filetype == 'go'
-    set splitbelow
-    :sp
-    :term go run .
   endif
 endfunc
 "} // Compile function
@@ -374,7 +309,7 @@ nmap <space><space> <CMD>CocCommand explorer<CR>
 nmap <space>f <CMD>CocCommand explorer --preset floating<CR>
 
 " Automatically open a coc explorer if no files specified
-autocmd VimEnter * if !argc() | CocCommand explorer | endif
+autocmd VimEnter * if !argc() | CocCommand explorer . | endif
 
 " Close vim if the only window left open
 autocmd BufEnter * if (winnr("$") == 1 && &filetype == 'coc-explorer') | q | endif
@@ -643,7 +578,6 @@ color snazzy
 let g:SnazzyTransparent = 1
 
 " auto-pairs
-au FileType c,cpp let b:AutoPairs = {'(':')', '[':']', '{':'}',"'":"'",'"':'"'}
 au FileType py let b:AutoPairs = {"`":"`", '```':'```', '"""':'"""', "'''":"'''"}
 
 " tcomment_vim
