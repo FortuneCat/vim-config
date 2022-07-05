@@ -5,7 +5,7 @@ set foldlevel=99
 set foldmethod=indent
 
 " make views automatic
-source fold/restore_view.vim
+source $VIMPATH/fold/restore_view.vim
 
 noremap <silent> <LEADER>fi <CMD>set fdm=indent<CR>
 noremap <silent> <LEADER>fk <CMD>set fdm=marker<CR>

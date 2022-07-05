@@ -1,6 +1,16 @@
 
-" An ultimate .vimrc for Pythoner
+" An ultimate .vimrc for programming
 " Author: yingly
+
+" forces Vim to source .vimrc file if it present in working directory,
+" thus providing a place to store project-specific configuration.
+set exrc
+" restrict usage of commands in non-default .vimrc files; commands that
+" write to file or execute shell commands are not allowed.
+set secure
+
+set colorcolumn=110
+highlight ColorColumn ctermbg=darkgray
 
 " Automatically install plug.vim if not available
 let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
@@ -25,10 +35,6 @@ set noswapfile
 
 set cursorline
 
-set expandtab
-set tabstop=2
-set shiftwidth=2
-set softtabstop=2
 set shiftround
 
 set splitright
@@ -65,7 +71,7 @@ set laststatus=2
 
 " } // Editor setup
 
-source fold/setting.vim
+source $VIMPATH/fold/setting.vim
 
 " Auto commands {
 " Keep cursor location
@@ -183,18 +189,6 @@ noremap Tn <CMD>+tabmove<CR>
 "" } // Tab
 
 " } // Key mappings
-
-" Compile function {
-noremap r :call CompileRunGcc()<CR>
-func! CompileRunGcc()
-  exec "w"
-  if &filetype == 'sh'
-    :!time bash %
-  elseif &filetype == 'python'
-    :term python3 %
-  endif
-endfunc
-"} // Compile function
 
 " Plugins installed with vim-plug {
 let g:plug_url_format = 'git@github.com:%s.git' " ssh
@@ -576,9 +570,6 @@ endfunc
 " color schema
 color snazzy
 let g:SnazzyTransparent = 1
-
-" auto-pairs
-au FileType py let b:AutoPairs = {"`":"`", '```':'```', '"""':'"""', "'''":"'''"}
 
 " tcomment_vim
 nnoremap ci cl
